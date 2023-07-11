@@ -43,9 +43,8 @@ db = Database(devconf)
 
 # ==============================================[ Routes - Start ]
 
+
 # /api/v1/events
-
-
 @app.route(f"{route_prefix}/events", methods=['GET'])
 def getEvents():
     try:
@@ -60,9 +59,8 @@ def getEvents():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+
 # /api/v1/lecturers
-
-
 @app.route(f"{route_prefix}/lecturers", methods=['GET'])
 def getLecturers():
     try:
@@ -76,9 +74,8 @@ def getLecturers():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+
 # /api/v1/rooms
-
-
 @app.route(f"{route_prefix}/rooms", methods=['GET'])
 def getRooms():
     try:
@@ -92,9 +89,8 @@ def getRooms():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+
 # /api/v1/lecturers
-
-
 @app.route(f"{route_prefix}/lecturers", methods=['POST'])
 def createLecturer():
     try:
@@ -135,6 +131,43 @@ def createRoom():
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 
+@app.route(f"{route_prefix}/events/<id>", methods=['PUT'])
+def updateEvent(id):
+    try:
+        body = request.get_json()
+        query = "UPDATE EVENT SET"
+        params = []
+        if 'StartTime' in body:
+            query += " StartTime = %s,"
+            params.append(body['StartTime'])
+        if 'EndTime' in body:
+            query += " EndTime = %s,"
+            params.append(body['EndTime'])
+        if 'WeekDay' in body:
+            query += " WeekDay = %s,"
+            params.append(body['WeekDay'])
+        if 'RoomId' in body:
+            query += " RoomId = %s,"
+            params.append(body['RoomId'])
+        if 'LecturerId' in body:
+            query += " LecturerId = %s,"
+            params.append(body['LecturerId'])
+        if 'Hide' in body:
+            query += " Hide = %s,"
+            params.append(body['Hide'])
+        query = query[:-1] + " WHERE Id = %s"
+        params.append(id)
+        
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+
 # /api/v1/rooms/<id>
 @app.route(f"{route_prefix}/rooms/<id>", methods=['DELETE'])
 def deleteRoom(id):
@@ -149,9 +182,8 @@ def deleteRoom(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+
 # /api/v1/lecturers/<id>
-
-
 @app.route(f"{route_prefix}/lecturers/<id>", methods=['DELETE'])
 def deleteLecturer(id):
     try:

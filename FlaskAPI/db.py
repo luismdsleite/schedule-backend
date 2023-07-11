@@ -50,17 +50,17 @@ class Database:
             raise Exception(
                 f'Failed to close the database connection due to: {e}')
 
-    def run_query(self, query, get_id=False):
+    def run_query(self, query, get_id=False, args=tuple()):
         """Execute SQL query."""
         try:
             if not query or not isinstance(query, str):
                 raise Exception()
-
+            
             if not self.__conn:
                 self.__open_connection()
 
             with self.__conn.cursor() as cursor:
-                cursor.execute(query)
+                cursor.execute(query, args)
                 if 'SELECT' in query.upper():
                     # Extract row headers
                     row_headers = [x[0] for x in cursor.description]
