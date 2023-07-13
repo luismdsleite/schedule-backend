@@ -59,6 +59,23 @@ def getEvents():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/events/{Id}
+@app.route(f"{route_prefix}/events/<id>", methods=['GET'])
+def getEvent(id):
+    try:
+        params = []
+        query = "SELECT * FROM EVENT WHERE Id = %s"
+        params.append(id)
+        records = db.run_query(query=query, args=tuple(params))
+        if len(records) == 0:
+            abort(HTTPStatus.NOT_FOUND, description=f"Event with ID {id} not found")
+        response = get_response_msg(records[0], HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/lecturers
 @app.route(f"{route_prefix}/lecturers", methods=['GET'])
