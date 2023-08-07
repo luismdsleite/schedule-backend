@@ -60,6 +60,8 @@ def getEvents():
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/events/{Id}
+
+
 @app.route(f"{route_prefix}/events/<id>", methods=['GET'])
 def getEvent(id):
     try:
@@ -68,7 +70,8 @@ def getEvent(id):
         params.append(id)
         records = db.run_query(query=query, args=tuple(params))
         if len(records) == 0:
-            abort(HTTPStatus.NOT_FOUND, description=f"Event with ID {id} not found")
+            abort(HTTPStatus.NOT_FOUND,
+                  description=f"Event with ID {id} not found")
         response = get_response_msg(records[0], HTTPStatus.OK)
         db.close_connection()
         return response
@@ -78,6 +81,8 @@ def getEvent(id):
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/lecturers
+
+
 @app.route(f"{route_prefix}/lecturers", methods=['GET'])
 def getLecturers():
     try:
@@ -97,6 +102,35 @@ def getLecturers():
 def getRooms():
     try:
         query = f"SELECT * FROM ROOM"
+        records = db.run_query(query=query)
+        response = get_response_msg(records, HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/blocks
+
+
+@app.route(f"{route_prefix}/blocks", methods=['GET'])
+def getBlocks():
+    try:
+        query = f"""
+        SELECT
+            b.Id AS Id, 
+            b.Name AS BlockName,
+            b.NameAbbr as NameAbbr,
+            b.Hide as Hide,
+            GROUP_CONCAT(be.EventId) AS AssociatedEventIds
+        FROM 
+            BLOCK b
+        LEFT JOIN 
+            BLOCK_TO_EVENT be ON b.Id = be.BlockId
+        GROUP BY 
+            b.Id, b.Name;
+        """
         records = db.run_query(query=query)
         response = get_response_msg(records, HTTPStatus.OK)
         db.close_connection()
@@ -174,7 +208,7 @@ def updateEvent(id):
             params.append(body['Hide'])
         query = query[:-1] + " WHERE Id = %s"
         params.append(id)
-        
+
         records = db.run_query(query=query, args=tuple(params))
         response = get_response_msg(records,  HTTPStatus.OK)
         db.close_connection()
