@@ -59,9 +59,8 @@ def getEvents():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+
 # /api/v1/events/{Id}
-
-
 @app.route(f"{route_prefix}/events/<id>", methods=['GET'])
 def getEvent(id):
     try:
@@ -80,9 +79,8 @@ def getEvent(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+
 # /api/v1/lecturers
-
-
 @app.route(f"{route_prefix}/lecturers", methods=['GET'])
 def getLecturers():
     try:
@@ -111,9 +109,8 @@ def getRooms():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+
 # /api/v1/blocks
-
-
 @app.route(f"{route_prefix}/blocks", methods=['GET'])
 def getBlocks():
     try:
@@ -134,7 +131,8 @@ def getBlocks():
         records = db.run_query(query=query)
         for record in records:
             try:
-                record['AssociatedEventIds'] = [int(event_id) for event_id in record['AssociatedEventIds'].split(',')]
+                record['AssociatedEventIds'] = [
+                    int(event_id) for event_id in record['AssociatedEventIds'].split(',')]
             except:
                 # case where record['AssociatedEventIds'] = null
                 record['AssociatedEventIds'] = []
