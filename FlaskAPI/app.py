@@ -120,7 +120,7 @@ def getBlocks():
         query = f"""
         SELECT
             b.Id AS Id, 
-            b.Name AS BlockName,
+            b.Name AS Name,
             b.NameAbbr as NameAbbr,
             b.Hide as Hide,
             GROUP_CONCAT(be.EventId) AS AssociatedEventIds
@@ -132,7 +132,14 @@ def getBlocks():
             b.Id, b.Name;
         """
         records = db.run_query(query=query)
+        for record in records:
+            try:
+                record['AssociatedEventIds'] = [int(event_id) for event_id in record['AssociatedEventIds'].split(',')]
+            except:
+                # case where record['AssociatedEventIds'] = null
+                record['AssociatedEventIds'] = []
         response = get_response_msg(records, HTTPStatus.OK)
+
         db.close_connection()
         return response
     except pymysql.MySQLError as sqle:
