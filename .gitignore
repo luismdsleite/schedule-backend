@@ -3,3 +3,6 @@ FlaskAPI/settings.json
 certs/
 venv/
 __pycache__/
+.env
+*.csv
+*.columns
