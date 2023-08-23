@@ -53,14 +53,15 @@ class Database:
     def run_query(self, query, get_id=False, args=tuple()):
         """Execute SQL query."""
         try:
+            
             if not query or not isinstance(query, str):
                 raise Exception()
-            
+
             if not self.__conn:
                 self.__open_connection()
-
             with self.__conn.cursor() as cursor:
                 cursor.execute(query, args)
+
                 if 'SELECT' in query.upper():
                     # Extract row headers
                     row_headers = [x[0] for x in cursor.description]
@@ -82,3 +83,4 @@ class Database:
             raise pymysql.MySQLError(f'Failed to execute query due to: {sqle}')
         except Exception as e:
             raise Exception(f'An exception occured due to: {e}')
+
