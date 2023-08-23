@@ -39,7 +39,7 @@ app = create_app()
 # assign to an app instance
 app.json = UpdatedJSONProvider(app)
 wsgi_app = app.wsgi_app
-db = Database(devconf)
+
 
 # ==============================================[ Routes - Start ]
 
@@ -48,6 +48,8 @@ db = Database(devconf)
 @app.route(f"{route_prefix}/events", methods=['GET'])
 def getEvents():
     try:
+        db = Database(devconf)
+        # db.ping() # reconnecting mysql
         query = f"SELECT * FROM EVENT"
         records = db.run_query(query=query)
         response = get_response_msg(records, HTTPStatus.OK)
@@ -59,11 +61,43 @@ def getEvents():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/occupations
+@app.route(f"{route_prefix}/occupations", methods=['GET'])
+def getOccupations():
+    try:
+        db = Database(devconf)
+        query = f"SELECT * FROM OCUPATION"
+        records = db.run_query(query=query)
+        response = get_response_msg(records, HTTPStatus.OK)
+
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/restrictions
+@app.route(f"{route_prefix}/restrictions", methods=['GET'])
+def getRestrictions():
+    try:
+        db = Database(devconf)
+        query = f"SELECT * FROM RESTRICTION"
+        records = db.run_query(query=query)
+        response = get_response_msg(records, HTTPStatus.OK)
+  
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/events/{Id}
 @app.route(f"{route_prefix}/events/<id>", methods=['GET'])
 def getEvent(id):
     try:
+        db = Database(devconf)
         params = []
         query = "SELECT * FROM EVENT WHERE Id = %s"
         params.append(id)
@@ -84,6 +118,7 @@ def getEvent(id):
 @app.route(f"{route_prefix}/lecturers", methods=['GET'])
 def getLecturers():
     try:
+        db = Database(devconf)
         query = f"SELECT * FROM LECTURER"
         records = db.run_query(query=query)
         response = get_response_msg(records, HTTPStatus.OK)
@@ -99,6 +134,7 @@ def getLecturers():
 @app.route(f"{route_prefix}/rooms", methods=['GET'])
 def getRooms():
     try:
+        db = Database(devconf)
         query = f"SELECT * FROM ROOM"
         records = db.run_query(query=query)
         response = get_response_msg(records, HTTPStatus.OK)
@@ -114,6 +150,7 @@ def getRooms():
 @app.route(f"{route_prefix}/blocks", methods=['GET'])
 def getBlocks():
     try:
+        db = Database(devconf)
         query = f"""
         SELECT
             b.Id AS Id, 
@@ -150,6 +187,7 @@ def getBlocks():
 @app.route(f"{route_prefix}/lecturers", methods=['POST'])
 def createLecturer():
     try:
+        db = Database(devconf)
         body = request.get_json()
         name = body['name']
         nameAbbr = body['nameAbbr']
@@ -170,6 +208,7 @@ def createLecturer():
 @app.route(f"{route_prefix}/rooms", methods=['POST'])
 def createRoom():
     try:
+        db = Database(devconf)
         body = request.get_json()
         name = body['name']
         nameAbbr = body['nameAbbr']
@@ -179,7 +218,7 @@ def createRoom():
         query = f"INSERT INTO ROOM(Name, NameAbbr, Number, Capacity, Hide) VALUES ('{name}', '{nameAbbr}', '{number}', {capacity}, {hide})"
         records = db.run_query(query=query)
         response = get_response_msg(records,  HTTPStatus.OK)
-        db.close_connection()
+        db.close_cosnnection()
         return response
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
@@ -190,6 +229,7 @@ def createRoom():
 @app.route(f"{route_prefix}/events/<id>", methods=['PUT'])
 def updateEvent(id):
     try:
+        db = Database(devconf)
         body = request.get_json()
         query = "UPDATE EVENT SET"
         params = []
@@ -228,6 +268,7 @@ def updateEvent(id):
 @app.route(f"{route_prefix}/rooms/<id>", methods=['DELETE'])
 def deleteRoom(id):
     try:
+        db = Database(devconf)
         query = f"DELETE FROM ROOM WHERE Id={id}"
         records = db.run_query(query=query)
         response = get_response_msg(records,  HTTPStatus.OK)
@@ -243,10 +284,11 @@ def deleteRoom(id):
 @app.route(f"{route_prefix}/lecturers/<id>", methods=['DELETE'])
 def deleteLecturer(id):
     try:
+        db = Database(devconf)
         query = f"DELETE FROM LECTURER WHERE Id={id}"
         records = db.run_query(query=query)
         response = get_response_msg(records,  HTTPStatus.OK)
-        db.close_connection()
+        db.close_connectison()
         return response
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
@@ -258,8 +300,10 @@ def deleteLecturer(id):
 @app.route(f"{route_prefix}/health", methods=['GET'])
 def health():
     try:
+        db = Database(devconf)
         db_status = "Connected to DB" if db.db_connection_status else "Not connected to DB"
         response = get_response_msg("I am fine! " + db_status, HTTPStatus.OK)
+        db.close_connection()
         return response
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
