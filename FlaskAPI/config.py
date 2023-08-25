@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import timedelta
 
 
 SETTINGS_FILE_NAME = 'settings.json'
@@ -53,7 +54,9 @@ class ProductionConfig(Config):
     ENV = CONF_DICT['env']['production']['ENV']
     DEBUG = CONF_DICT['env']['production']['DEBUG']
     DEVELOPMENT = CONF_DICT['env']['production']['DEVELOPMENT']
-    CONNECT_TIMEOUT = CONF_DICT['env']['development']['DATABASE_CONNECTION_OPTIONS']['CONNECT_TIMEOUT']
+    CONNECT_TIMEOUT = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['CONNECT_TIMEOUT']
+    JWT_SECRET_KEY = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['JWT_SECRET_KEY']
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=int(CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['JWT_ACCESS_TOKEN_EXPIRES']))  
 
 
 class DevelopmentConfig(Config):
@@ -69,3 +72,6 @@ class DevelopmentConfig(Config):
     DB_PASSWD = CONF_DICT['env']['development']['DATABASE_CONNECTION_OPTIONS']['DB_PASSWD']
     DB_NAME = CONF_DICT['env']['development']['DATABASE_CONNECTION_OPTIONS']['DB_NAME']
     CONNECT_TIMEOUT = CONF_DICT['env']['development']['DATABASE_CONNECTION_OPTIONS']['CONNECT_TIMEOUT']
+    PEPPER = CONF_DICT['env']['development']['DATABASE_CONNECTION_OPTIONS']['PEPPER']
+    JWT_SECRET_KEY = CONF_DICT['env']['development']['DATABASE_CONNECTION_OPTIONS']['JWT_SECRET_KEY']
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=int(CONF_DICT['env']['development']['DATABASE_CONNECTION_OPTIONS']['JWT_ACCESS_TOKEN_EXPIRES']))

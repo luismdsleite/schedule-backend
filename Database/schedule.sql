@@ -80,3 +80,11 @@ ALTER TABLE `BLOCK_TO_EVENT` ADD FOREIGN KEY (`EventId`) REFERENCES `EVENT` (`Id
 ALTER TABLE `RESTRICTION` ADD FOREIGN KEY (`LecturerId`) REFERENCES `LECTURER` (`Id`);
 
 ALTER TABLE `OCUPATION` ADD FOREIGN KEY (`RoomId`) REFERENCES `ROOM` (`Id`);
+
+CREATE TABLE `USER` (
+  `Username` varchar(255),
+  `Hash` VARCHAR(255),
+  `PasswordHash` varbinary(72),
+  `Salt` varbinary(29),
+  PRIMARY KEY (`Username`)
+);
