@@ -54,9 +54,15 @@ class ProductionConfig(Config):
     ENV = CONF_DICT['env']['production']['ENV']
     DEBUG = CONF_DICT['env']['production']['DEBUG']
     DEVELOPMENT = CONF_DICT['env']['production']['DEVELOPMENT']
+    DB_HOST = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['DB_HOST']
+    DB_PORT = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['DB_PORT']
+    DB_USER = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['DB_USER']
+    DB_PASSWD = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['DB_PASSWD']
+    DB_NAME = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['DB_NAME']
     CONNECT_TIMEOUT = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['CONNECT_TIMEOUT']
+    PEPPER = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['PEPPER']
     JWT_SECRET_KEY = CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['JWT_SECRET_KEY']
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=int(CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['JWT_ACCESS_TOKEN_EXPIRES']))  
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=int(CONF_DICT['env']['production']['DATABASE_CONNECTION_OPTIONS']['JWT_ACCESS_TOKEN_EXPIRES']))
 
 
 class DevelopmentConfig(Config):
