@@ -2,12 +2,26 @@
 
 In this repository you can find the backend of the schedule app. This app is a simple schedule app where you can add, edit and delete events. The backend is made with Flask and the database is made with Mysql. Additionally there exists a `migrate.py` script which is used to migrate the old access database to the new one.
 
+## Table of Contents
+- [schedule-backend](#schedule-backend)
+  - [Table of Contents](#table-of-contents)
+  - [Database](#database)
+    - [Creating the Database](#creating-the-database)
+  - [FlaskAPI](#flaskapi)
+    - [Executing the API](#executing-the-api)
+    - [Switching between Production and Development Mode](#switching-between-production-and-development-mode)
+  - [Migration](#migration)
+
+
 ## Database
 The database is based on the old access databased used plus an aditional User table for authentication purposes. A few minor changes were made to the database to make it more suitable for the app. The database is made with Mysql and the schema can be found below.
 
 ![Database](./Database/schedule.png)
 
-The [schedule.sql](./Database/schedule.sql) file contains an sql script to create the database and the tables.
+### Creating the Database
+The [schedule.sql](./Database/schedule.sql) file contains an sql script to create the database and the tables. By default the database will be named schedule.
+
+ __**WARNING**__: The script will drop the database schedule if it already exists.
 
 ## FlaskAPI
 The Flask API uses the `mysql.connector` library to connect to the database. Besides connection to the database, the API also handles authentication. The authentication is done with the `flask_jwt_extended` library to provide JWT tokens.
