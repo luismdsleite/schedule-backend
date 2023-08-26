@@ -5,7 +5,7 @@ from http import HTTPStatus
 from flask_cors import CORS
 from flask import Flask, redirect, request, jsonify, url_for, abort
 from db import Database
-from config import DevelopmentConfig as conf
+from config import ProductionConfig as conf
 from json_provider import UpdatedJSONProvider
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 import datetime

@@ -1,3 +1,99 @@
 # schedule-backend
 
-# NOTE: This version is still not safe. Passwords are not apropriately dealt with.
+In this repository you can find the backend of the schedule app. This app is a simple schedule app where you can add, edit and delete events. The backend is made with Flask and the database is made with Mysql. Additionally there exists a `migrate.py` script which is used to migrate the old access database to the new one.
+
+## Database
+The database is based on the old access databased used plus an aditional User table for authentication purposes. A few minor changes were made to the database to make it more suitable for the app. The database is made with Mysql and the schema can be found below.
+
+![Database](./Database/schedule.png)
+
+The [schedule.sql](./Database/schedule.sql) file contains an sql script to create the database and the tables.
+
+## FlaskAPI
+The Flask API uses the `mysql.connector` library to connect to the database. Besides connection to the database, the API also handles authentication. The authentication is done with the `flask_jwt_extended` library to provide JWT tokens.
+
+### Executing the API
+To execute the API you need to have a `FlaskAPI/settings.json` file. Below can be found a template with the fields not filled up.
+
+```json
+{
+    "config": {
+        "common": {
+            "HOST": "0.0.0.0",
+            "PORT": 8008,
+            "VERSION": "v1",
+            "URL_PREFIX": "api",
+            "DEFAULT_DEBUG": true,
+            "THREADS_PER_PAGE": 2,
+            "CSRF_ENABLED": true,
+            "CSRF_SESSION_KEY": ""
+        },
+        "env": {
+            "production": {
+                "ENV": "production",
+                "DEBUG": false,
+                "DEVELOPMENT": false,
+                "DATABASE_CONNECTION_OPTIONS": {
+                    "DATABASE": "",
+                    "DB_HOST": "",
+                    "DB_PORT": "",
+                    "DB_USER": "",
+                    "DB_PASSWD": "",
+                    "DB_NAME": "",
+                    "CONNECT_TIMEOUT": 5,
+                    "JWT_SECRET_KEY" : "",
+                    "PEPPER": "",
+                    "JWT_ACCESS_TOKEN_EXPIRES": 1440
+                }
+            },
+            "development": {
+                "ENV": "development",
+                "DEBUG": true,
+                "DEVELOPMENT": true,
+                "DATABASE_CONNECTION_OPTIONS": {
+                    "DATABASE": "",
+                    "DB_HOST": "",
+                    "DB_PORT": 3306,
+                    "DB_USER": "",
+                    "DB_PASSWD": "",
+                    "DB_NAME": "",                    
+                    "CONNECT_TIMEOUT": 5,
+                    "JWT_SECRET_KEY" : "",
+                    "PEPPER": "",
+                    "JWT_ACCESS_TOKEN_EXPIRES": 1440
+                }
+            }
+        }
+    }
+}
+```
+
+### Switching between Production and Development Mode
+By default the API is in **Production Mode**, to access the Development Mode in the [app.py](./FlaskAPI/app.py) 
+change the following line:
+
+```python
+from config import ProductionConfig as config # From this
+from config import DevelopmentConfig as config # To this
+```
+
+After filling up the fields you can execute the API with the following command:
+
+```bash
+python app.py
+```
+
+## Migration
+To migrate from the old DB to the new one follow these steps:
+
+1. Convert the .mdb access file to mysql tables. This be done by specialized apps like [this one](https://eggerapps.at/mdbviewer/docs/en/convert-access-to-mysql.html) or with converters available online like [this one](https://www.rebasedata.com/convert-mdb-to-mysql-online).
+2. Store the mysql tables in the `Migration/old_db` and create a `Migration/new_db` directory.
+3. Create a `Migration/.env` file with the following fields:
+
+```bash
+DB_USER=""
+DB_PASSWORD=""
+DB_HOST=""
+DB_NAME=""
+```
+4. On the `Migration/` directory execute the `migrate.py` script, the new tables will be stored in the `Migration/new_db` directory.
