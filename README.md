@@ -4,17 +4,6 @@ In this repository you can find the backend of the schedule app. This app is a s
 
 The code responsible for the frontend part of the app can be found [here](https://github.com/luismdsleite/schedule).
 
-## Table of Contents
-- [schedule-backend](#schedule-backend)
-  - [Table of Contents](#table-of-contents)
-  - [Database](#database)
-    - [Creating the Database](#creating-the-database)
-  - [FlaskAPI](#flaskapi)
-    - [Executing the API](#executing-the-api)
-    - [Switching between Production and Development Mode](#switching-between-production-and-development-mode)
-  - [Migration](#migration)
-
-
 ## Database
 The database is based on the old access databased used plus an aditional User table for authentication purposes. A few minor changes were made to the database to make it more suitable for the app. The database is made with Mysql and the schema can be found below.
 
