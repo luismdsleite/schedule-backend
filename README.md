@@ -101,4 +101,4 @@ DB_PASSWORD=""
 DB_HOST=""
 DB_NAME=""
 ```
-4. On the `Migration/` directory execute the `migrate.py` script, the new tables will be stored in the `Migration/new_db` directory.
+4. On the `Migration/` directory execute the `migrate.py` script, this populate the new DB and also store the new tables in the `Migration/new_db` directory.
