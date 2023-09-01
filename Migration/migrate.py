@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import mysql.connector
 from time_converter import convertTime
 import numpy as np
+import traceback
 
 # Load environment variables from .env file
 load_dotenv()
@@ -177,13 +178,30 @@ def migrateBlockToEvent(cursor):
         cursor.execute(insert_query, values)
         connection.commit()
 
-
-migrateRooms(cursor)
-migrateLecturers(cursor)
-migrateRestrictions(cursor)
-migrateEvents(cursor)
-migrateBlocks(cursor)
-migrateBlockToEvent(cursor)
+try:
+    migrateRooms(cursor)    
+except Exception as e:
+    traceback.print_exc()
+try:    
+    migrateLecturers(cursor)
+except Exception as e:
+    traceback.print_exc()
+try:    
+    migrateRestrictions(cursor)
+except Exception as e:
+    traceback.print_exc()
+try:    
+    migrateEvents(cursor)
+except Exception as e:
+    traceback.print_exc()
+try:    
+    migrateBlocks(cursor)
+except Exception as e:
+    traceback.print_exc()
+try:    
+    migrateBlockToEvent(cursor)
+except Exception as e:
+    traceback.print_exc()
 
 # Close the connection
 cursor.close()
