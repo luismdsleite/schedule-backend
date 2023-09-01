@@ -73,7 +73,7 @@ To execute the API you need to have a `FlaskAPI/settings.json` file. Below can b
 }
 ```
 
-You must also have certificates in the `certs\` directory with a `cert.pem` and a `key.pem` file
+You must also have certificates in the `certs\` directory with a `cert.pem` and a `key.pem` file.
 
 ### Switching between Production and Development Mode
 By default the API is in **Production Mode**, to access the Development Mode in the [app.py](./FlaskAPI/app.py) 
@@ -89,6 +89,17 @@ After filling up the fields you can execute the API with the following command:
 ```bash
 python app.py
 ```
+
+### Registering the first user. 
+To register new users you must make a POST request to the `/api/v1/auth/register` endpoint with the following body:
+
+```json
+{
+    "username": "username",
+    "password": "password"
+}
+```	
+This endpoint **by default requires authentication** (to avoid access to anyone), so for creating your first user, you can either comment the `@jwt_required()` decorator in the `\register` route (on the [app.py](FlaskAPI/app.py)) and use the FlaskAPI to register your first user, or manually add an entry into the MySQL database.
 
 ## Migration
 To migrate from the old DB to the new one follow these steps:
