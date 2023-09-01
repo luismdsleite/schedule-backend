@@ -59,7 +59,6 @@ def register():
     salt = bcrypt.gensalt()  # Generates a new salt
     hashed_password = bcrypt.hashpw(
         (password + conf.PEPPER).encode('utf-8'), salt)
-    print("salt", salt)
     query = f"INSERT INTO USER(Username, PasswordHash, Salt, Hash) VALUES (%s, %s, %s, %s)"
     params = [username, hashed_password, salt, "bcrypt"]
     db = Database(conf)
