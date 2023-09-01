@@ -62,7 +62,6 @@ CREATE TABLE `RESTRICTION` (
 CREATE TABLE `OCUPATION` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `RoomId` int,
-  `Type` int,
   `StartTime` time,
   `EndTime` time,
   `WeekDay` tinyint,
