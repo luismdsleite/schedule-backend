@@ -73,6 +73,8 @@ To execute the API you need to have a `FlaskAPI/settings.json` file. Below can b
 }
 ```
 
+You must also have certificates in the `certs\` directory with a `cert.pem` and a `key.pem` file
+
 ### Switching between Production and Development Mode
 By default the API is in **Production Mode**, to access the Development Mode in the [app.py](./FlaskAPI/app.py) 
 change the following line:
