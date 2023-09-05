@@ -105,7 +105,7 @@ This endpoint **by default requires authentication** (to avoid access to anyone)
 To migrate from the old DB to the new one follow these steps:
 
 1. Convert the .mdb access file to csv files. This can be done by specialized apps like or with converters available online like [this one](https://www.rebasedata.com/convert-mdb-to-csv-online).
-2. Store the mysql tables in the `Migration/old_db` and create a `Migration/new_db` directory.
+2. Store the csv tables in the `Migration/old_db` and create a `Migration/new_db` directory.
 3. Create a `Migration/.env` file with the following fields:
 
 ```bash
