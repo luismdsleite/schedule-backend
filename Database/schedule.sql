@@ -1,4 +1,4 @@
-DROP DATABASE schedule;
+DROP DATABASE IF EXISTS schedule;
 CREATE DATABASE IF NOT EXISTS schedule;
 
 USE schedule;
