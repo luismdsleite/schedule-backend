@@ -5,66 +5,66 @@ USE schedule;
 
 CREATE TABLE `EVENT` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `Subject` varchar(255),
-  `SubjectAbbr` varchar(255),
+  `Subject` varchar(255) NOT NULL,
+  `SubjectAbbr` varchar(255) NOT NULL,
   `LecturerId` int,
   `RoomId` int,
   `StartTime` time,
   `EndTime` time,
   `WeekDay` tinyint,
-  `Hide` boolean,
+  `Hide` boolean NOT NULL,
   PRIMARY KEY (`Id`)
 );
 
 CREATE TABLE `LECTURER` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `Name` varchar(255),
-  `NameAbbr` varchar(255),
-  `Office` varchar(255),
-  `Hide` boolean,
+  `Name` varchar(255) NOT NULL,
+  `NameAbbr` varchar(255) NOT NULL,
+  `Office` varchar(255) NOT NULL,
+  `Hide` boolean NOT NULL,
   PRIMARY KEY (`Id`)
 );
 
 CREATE TABLE `ROOM` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `Name` varchar(255),
-  `NameAbbr` varchar(255),
-  `Number` varchar(255),
-  `Capacity` int,
-  `Hide` boolean,
+  `Name` varchar(255) NOT NULL,
+  `NameAbbr` varchar(255) NOT NULL,
+  `Number` varchar(255) NOT NULL,
+  `Capacity` int NOT NULL,
+  `Hide` boolean NOT NULL,
   PRIMARY KEY (`Id`)
 );
 
 CREATE TABLE `BLOCK` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `Name` varchar(255),
-  `NameAbbr` varchar(255),
-  `Hide` boolean,
+  `Name` varchar(255) NOT NULL,
+  `NameAbbr` varchar(255) NOT NULL,
+  `Hide` boolean NOT NULL,
   PRIMARY KEY (`Id`)
 );
 
 CREATE TABLE `BLOCK_TO_EVENT` (
-  `BlockId` int,
-  `EventId` int,
+  `BlockId` int NOT NULL,
+  `EventId` int NOT NULL,
   PRIMARY KEY (`BlockId`, `EventId`)
 );
 
 CREATE TABLE `RESTRICTION` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `LecturerId` int,
-  `Type` int,
-  `StartTime` time,
-  `EndTime` time,
-  `WeekDay` tinyint,
+  `LecturerId` int NOT NULL,
+  `Type` int NOT NULL,
+  `StartTime` time NOT NULL,
+  `EndTime` time NOT NULL,
+  `WeekDay` tinyint NOT NULL,
   PRIMARY KEY (`Id`)
 );
 
 CREATE TABLE `OCUPATION` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `RoomId` int,
-  `StartTime` time,
-  `EndTime` time,
-  `WeekDay` tinyint,
+  `RoomId` int NOT NULL,
+  `StartTime` time NOT NULL,
+  `EndTime` time NOT NULL,
+  `WeekDay` tinyint NOT NULL,
   PRIMARY KEY (`Id`)
 );
 
@@ -81,9 +81,9 @@ ALTER TABLE `RESTRICTION` ADD FOREIGN KEY (`LecturerId`) REFERENCES `LECTURER` (
 ALTER TABLE `OCUPATION` ADD FOREIGN KEY (`RoomId`) REFERENCES `ROOM` (`Id`);
 
 CREATE TABLE `USER` (
-  `Username` varchar(255),
-  `Hash` VARCHAR(255),
-  `PasswordHash` varbinary(72),
-  `Salt` varbinary(29),
+  `Username` varchar(255) NOT NULL,
+  `Hash` VARCHAR(255) NOT NULL,
+  `PasswordHash` varbinary(72) NOT NULL,
+  `Salt` varbinary(29) NOT NULL,
   PRIMARY KEY (`Username`)
 );
