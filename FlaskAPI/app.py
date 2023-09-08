@@ -264,10 +264,10 @@ def createLecturer():
     try:
         db = Database(conf)
         body = request.get_json()
-        name = body['name']
-        nameAbbr = body['nameAbbr']
-        office = body['office']
-        hide = body['hide']
+        name = body['Name']
+        nameAbbr = body['NameAbbr']
+        office = body['Office']
+        hide = body['Hide']
         params = [name, nameAbbr, office, hide]
         query = f"INSERT INTO LECTURER(Name, NameAbbr, Office, Hide) VALUES (%s, %s, %s, %s)"
         records = db.run_query(query=query, args=tuple(params))
@@ -280,6 +280,7 @@ def createLecturer():
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 
+
 # /api/v1/rooms
 @app.route(f"{route_prefix}/rooms", methods=['POST'])
 @jwt_required()
@@ -287,11 +288,11 @@ def createRoom():
     try:
         db = Database(conf)
         body = request.get_json()
-        name = body['name']
-        nameAbbr = body['nameAbbr']
-        number = body['number']
-        capacity = body['capacity']
-        hide = body['hide']
+        name = body['Name']
+        nameAbbr = body['NameAbbr']
+        number = body['Number']
+        capacity = body['Capacity']
+        hide = body['Hide']
         params = [name, nameAbbr, number, capacity, hide]
         query = f"INSERT INTO ROOM(Name, NameAbbr, Number, Capacity, Hide) VALUES (%s, %s, %s, %s, %s)"
         records = db.run_query(query=query, args=tuple(params))
