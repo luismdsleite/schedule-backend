@@ -311,8 +311,8 @@ def updateEvent(id):
     try:
         db = Database(conf)
         body = request.get_json()
-        query = "UPDATE EVENT SET"
-        params = []
+        query = "UPDATE EVENT SET Subject = %s, SubjectAbbr = %s,"
+        params = [body['Subject'], body['SubjectAbbr']]
         if 'StartTime' in body:
             query += " StartTime = %s,"
             params.append(body['StartTime'])
