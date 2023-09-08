@@ -304,6 +304,50 @@ def createRoom():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/events
+@app.route(f"{route_prefix}/events", methods=['POST'])
+@jwt_required()
+def createEvent():
+    try:
+        db = Database(conf)
+        body = request.get_json()
+        query_part1 = "INSERT INTO EVENT (Subject, SubjectAbbr, "
+        query_part2 = ") VALUES (%s, %s, "
+        params = [body['Subject'], body['SubjectAbbr']]
+
+        if 'StartTime' in body:
+            query_part1 += " StartTime,"
+            query_part2 += " %s,"
+            params.append(body['StartTime'])
+        if 'EndTime' in body:
+            query_part1 += " EndTime,"
+            query_part2 += " %s,"
+            params.append(body['EndTime'])
+        if 'WeekDay' in body:
+            query_part1 += " WeekDay,"
+            query_part2 += " %s,"
+            params.append(body['WeekDay'])
+        if 'RoomId' in body:
+            query_part1 += " RoomId,"
+            query_part2 += " %s,"
+            params.append(body['RoomId'])
+        if 'LecturerId' in body:
+            query_part1 += " LecturerId,"
+            query_part2 += " %s,"
+            params.append(body['LecturerId'])
+        if 'Hide' in body:
+            query_part1 += " Hide,"
+            query_part2 += " %s,"
+            params.append(body['Hide'])
+        query = query_part1[:-1] + query_part2[:-1] + ")"
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 @app.route(f"{route_prefix}/events/<id>", methods=['PUT'])
 @jwt_required()
