@@ -387,6 +387,41 @@ def updateEvent(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/rooms
+@app.route(f"{route_prefix}/rooms/<id>", methods=['PUT'])
+@jwt_required()
+def updateRoom(id):
+    try:
+        db = Database(conf)
+        body = request.get_json()
+        params = [body['Name'], body['NameAbbr'],  body['Number'], body['Capacity'], body['Hide'], id]
+        query = "UPDATE ROOM SET Name=%s, NameAbbr=%s, Number=%s, Capacity=%s, HIDE=%s WHERE Id = %s"
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+
+# /api/v1/events/<id>
+@app.route(f"{route_prefix}/events/<id>", methods=['DELETE'])
+@jwt_required()
+def deleteEvent(id):
+    try:
+        db = Database(conf)
+        query = f"DELETE FROM EVENT WHERE Id=%s"
+        params = [id]
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/rooms/<id>
 @app.route(f"{route_prefix}/rooms/<id>", methods=['DELETE'])
