@@ -387,7 +387,7 @@ def updateEvent(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
-# /api/v1/rooms
+# /api/v1/rooms/<id>
 @app.route(f"{route_prefix}/rooms/<id>", methods=['PUT'])
 @jwt_required()
 def updateRoom(id):
@@ -396,6 +396,24 @@ def updateRoom(id):
         body = request.get_json()
         params = [body['Name'], body['NameAbbr'],  body['Number'], body['Capacity'], body['Hide'], id]
         query = "UPDATE ROOM SET Name=%s, NameAbbr=%s, Number=%s, Capacity=%s, HIDE=%s WHERE Id = %s"
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/lecturers/<id>
+@app.route(f"{route_prefix}/lecturers/<id>", methods=['PUT'])
+@jwt_required()
+def updateLect(id):
+    try:
+        db = Database(conf)
+        body = request.get_json()
+        params = [body['Name'], body['NameAbbr'],  body['Office'], body['Hide'], id]
+        query = "UPDATE LECTURER SET Name=%s, NameAbbr=%s, Office=%s, HIDE=%s WHERE Id = %s"
         records = db.run_query(query=query, args=tuple(params))
         response = get_response_msg(records,  HTTPStatus.OK)
         db.close_connection()
