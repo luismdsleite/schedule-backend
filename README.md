@@ -1,6 +1,6 @@
 # schedule-backend
 
-In this repository you can find the backend of the schedule app. This app is a simple schedule app where you can add, edit and delete events. The backend is made with Flask and the database is made with Mysql. Additionally there exists a `migrate.py` script which is used to migrate the old access database to the new one.
+In this repository you can find the backend of the schedules app. This app is a simple timetabling app where you can add, edit and delete events. The backend is made with Flask and the database is made with Mysql. Additionally there exists a `migrate.py` script which is used to migrate the old access database to the new one.
 
 The code responsible for the frontend part of the app can be found [here](https://github.com/luismdsleite/schedule).
 
