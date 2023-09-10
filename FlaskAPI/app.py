@@ -184,6 +184,77 @@ def getEvent(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# Route for getting a specific block by ID
+@app.route(f"{route_prefix}/blocks/<id>", methods=['GET'])
+@jwt_required()
+def getBlock(id):
+    try:
+        db = Database(conf)
+        query = f"""
+        SELECT
+            b.Id AS Id, 
+            b.Name AS Name,
+            b.NameAbbr as NameAbbr,
+            b.Hide as Hide,
+            GROUP_CONCAT(be.EventId) AS AssociatedEventIds
+        FROM 
+            BLOCK b
+        LEFT JOIN 
+            BLOCK_TO_EVENT be ON b.Id = be.BlockId
+        WHERE
+            b.id = %s
+        GROUP BY 
+            b.Id, b.Name;
+        """
+        records = db.run_query(query=query, args=(id))
+        for record in records:
+            try:
+                record['AssociatedEventIds'] = [
+                    int(event_id) for event_id in record['AssociatedEventIds'].split(',')]
+            except:
+                # case where record['AssociatedEventIds'] = null
+                record['AssociatedEventIds'] = []
+        response = get_response_msg(records[0], HTTPStatus.OK)
+
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/rooms
+@app.route(f"{route_prefix}/rooms/<id>", methods=['GET'])
+@jwt_required()
+def getRoom(id):
+    try:
+        db = Database(conf)
+        query = f"SELECT * FROM ROOM WHERE Id = %s"
+        records = db.run_query(query=query, args=(id))
+        response = get_response_msg(records[0], HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/lecturers
+@app.route(f"{route_prefix}/lecturers/<id>", methods=['GET'])
+@jwt_required()
+def getLecturer(id):
+    try:
+        db = Database(conf)
+        query = f"SELECT * FROM LECTURER WHERE Id = %s"
+        records = db.run_query(query=query, args=(id))
+        response = get_response_msg(records[0], HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
 
 # /api/v1/lecturers
 @app.route(f"{route_prefix}/lecturers", methods=['GET'])
