@@ -330,6 +330,50 @@ def getBlocks():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# Route for creating a new block via POST request
+@app.route(f"{route_prefix}/blocks", methods=['POST'])
+@jwt_required()
+def createBlock():
+    try:
+        # Parse the JSON data from the POST request
+        data = request.get_json()
+
+        # Create a database connection
+        db = Database(conf)
+        conn = db.get_connection()
+
+        # Insert a new block into the database
+        query = """
+        INSERT INTO BLOCK (Name, NameAbbr, Hide)
+        VALUES (%s, %s, %s)
+        """
+        cursor = conn.cursor()
+        cursor.execute(query, (data['Name'], data['NameAbbr'], data['Hide']))
+
+        # Retrieve the ID of the newly created block
+        new_block_id = cursor.lastrowid
+
+        # Update the block's associated events
+        if 'AssociatedEventIds' in data:
+            insert_query = """
+            INSERT INTO BLOCK_TO_EVENT (BlockId, EventId)
+            VALUES (%s, %s)
+            """
+            for event_id in data['AssociatedEventIds']:
+                cursor.execute(insert_query, (new_block_id, event_id))
+
+        # Commit the changes to the database
+        conn.commit()
+
+        # Close the cursor and database connection
+        db.close_connection()
+
+        return getBlock(new_block_id), HTTPStatus.CREATED
+
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/lecturers
 @app.route(f"{route_prefix}/lecturers", methods=['POST'])
@@ -498,10 +542,10 @@ def updateLect(id):
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 
-# Route for adding a block via PUT request
+# /api/v1/blocks/<id>
 @app.route(f"{route_prefix}/blocks/<id>", methods=['PUT'])
 @jwt_required()
-def update_block(id):
+def updateBlock(id):
     try:
         # Parse the JSON data from the PUT request
         data = request.get_json()
@@ -543,6 +587,43 @@ def update_block(id):
         db.close_connection()
 
         return getBlock(id)
+
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/blocks/<id>
+@app.route(f"{route_prefix}/blocks/<id>", methods=['DELETE'])
+@jwt_required()
+def deleteBlock(id):
+    try:
+        # Create a database connection
+        db = Database(conf)
+        conn = db.get_connection()
+
+        cursor = conn.cursor()
+
+        # First, delete all existing associations for the block
+        delete_block_to_events_query = """
+        DELETE FROM BLOCK_TO_EVENT
+        WHERE BlockId = %s
+        """
+        cursor.execute(delete_block_to_events_query, (id))
+        print("Reached")
+        # Then, delete the block
+        delete_block_query = """
+        DELETE FROM BLOCK WHERE Id =%s
+        """
+        cursor.execute(delete_block_query, (id))
+
+        # Commit the changes to the database
+        conn.commit()
+
+        # Close the cursor and database connection
+        db.close_connection()
+
+        return get_response_msg({}, HTTPStatus.OK)
 
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
