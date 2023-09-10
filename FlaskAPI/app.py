@@ -452,7 +452,7 @@ def updateEvent(id):
         records = db.run_query(query=query, args=tuple(params))
         response = get_response_msg(records,  HTTPStatus.OK)
         db.close_connection()
-        return response
+        return getEvent(id)
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
     except Exception as e:
@@ -470,7 +470,7 @@ def updateRoom(id):
         records = db.run_query(query=query, args=tuple(params))
         response = get_response_msg(records,  HTTPStatus.OK)
         db.close_connection()
-        return response
+        return getRoom(id)
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
     except Exception as e:
@@ -488,7 +488,7 @@ def updateLect(id):
         records = db.run_query(query=query, args=tuple(params))
         response = get_response_msg(records,  HTTPStatus.OK)
         db.close_connection()
-        return response
+        return getLecturer(id)
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
     except Exception as e:
