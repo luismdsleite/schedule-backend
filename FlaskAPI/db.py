@@ -53,7 +53,7 @@ class Database:
     def run_query(self, query, get_id=False, args=tuple()):
         """Execute SQL query."""
         try:
-            
+
             if not query or not isinstance(query, str):
                 raise Exception()
 
@@ -84,3 +84,8 @@ class Database:
         except Exception as e:
             raise Exception(f'An exception occured due to: {e}')
 
+    def get_connection(self):
+        """Returns the connection object."""
+        if not self.__conn:
+            self.__open_connection()
+        return self.__conn
