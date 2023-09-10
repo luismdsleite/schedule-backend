@@ -9,6 +9,9 @@ from config import ProductionConfig as conf
 from json_provider import UpdatedJSONProvider
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 import datetime
+import pymysql.cursors
+
+
 
 host = os.environ.get('FLASK_SERVER_HOST', conf.HOST)
 port = os.environ.get('FLASK_SERVER_PORT', conf.PORT)
@@ -494,6 +497,57 @@ def updateLect(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+
+# Route for adding a block via PUT request
+@app.route(f"{route_prefix}/blocks/<id>", methods=['PUT'])
+@jwt_required()
+def update_block(id):
+    try:
+        # Parse the JSON data from the PUT request
+        data = request.get_json()
+
+        # Create a database connection
+        db = Database(conf)
+        conn = db.get_connection()
+
+        # Update the block's information
+        query = """
+        UPDATE BLOCK
+        SET Name = %s, NameAbbr = %s, Hide = %s
+        WHERE Id = %s
+        """
+        cursor = conn.cursor()
+        cursor.execute(query, (data['Name'], data['NameAbbr'], data['Hide'], id))
+
+        # Update the block's associated events
+        if 'AssociatedEventIds' in data:
+            # First, delete all existing associations for the block
+            delete_query = """
+            DELETE FROM BLOCK_TO_EVENT
+            WHERE BlockId = %s
+            """
+            cursor.execute(delete_query, (id))
+
+            # Then, add the new associations
+            insert_query = """
+            INSERT INTO BLOCK_TO_EVENT (BlockId, EventId)
+            VALUES (%s, %s)
+            """
+            for event_id in data['AssociatedEventIds']:
+                cursor.execute(insert_query, (id, event_id))
+
+        # Commit the changes to the database
+        conn.commit()
+
+        # Close the cursor and database connection
+        db.close_connection()
+
+        return getBlock(id)
+
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/events/<id>
 @app.route(f"{route_prefix}/events/<id>", methods=['DELETE'])
