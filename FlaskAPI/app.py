@@ -389,9 +389,8 @@ def createLecturer():
         params = [name, nameAbbr, office, hide]
         query = f"INSERT INTO LECTURER(Name, NameAbbr, Office, Hide) VALUES (%s, %s, %s, %s)"
         records = db.run_query(query=query, args=tuple(params))
-        response = get_response_msg(records,  HTTPStatus.OK)
         db.close_connection()
-        return response
+        return getLecturer(records['id'])
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
     except Exception as e:
@@ -414,9 +413,7 @@ def createRoom():
         params = [name, nameAbbr, number, capacity, hide]
         query = f"INSERT INTO ROOM(Name, NameAbbr, Number, Capacity, Hide) VALUES (%s, %s, %s, %s, %s)"
         records = db.run_query(query=query, args=tuple(params))
-        response = get_response_msg(records,  HTTPStatus.OK)
-        db.close_connection()
-        return response
+        return getRoom(records['id'])
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
     except Exception as e:
@@ -459,9 +456,8 @@ def createEvent():
             params.append(body['Hide'])
         query = query_part1[:-1] + query_part2[:-1] + ")"
         records = db.run_query(query=query, args=tuple(params))
-        response = get_response_msg(records,  HTTPStatus.OK)
         db.close_connection()
-        return response
+        return getEvent(records['id'])
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
     except Exception as e:
