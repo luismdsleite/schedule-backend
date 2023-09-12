@@ -219,6 +219,23 @@ def getRestriction(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/occupations/{Id}
+@app.route(f"{route_prefix}/occupations/<id>", methods=['GET'])
+@jwt_required()
+def getOccupation(id):
+    try:
+        db = Database(conf)
+        query = f"SELECT * FROM OCCUPATION WHERE Id = %s"
+        records = db.run_query(query=query, args=(id))
+        response = get_response_msg(records[0], HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
 # /api/v1/events
 
 @app.route(f"{route_prefix}/events", methods=['GET'])
@@ -500,6 +517,24 @@ def createRestriction():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/occupations/
+@app.route(f"{route_prefix}/occupations", methods=['POST'])
+@jwt_required()
+def createOccupation():
+    try:
+        db = Database(conf)
+        body = request.get_json()
+        query = "INSERT INTO OCCUPATION (RoomId, StartTime, EndTime, WeekDay) VALUES (%s, %s, %s, %s)"
+        params = [body['RoomId'], body['StartTime'], body['EndTime'], body['WeekDay']]
+        records = db.run_query(query=query, args=tuple(params))
+        db.close_connection()
+        return getOccupation(records['id'])
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
 @app.route(f"{route_prefix}/events/<id>", methods=['PUT'])
 @jwt_required()
 def updateEvent(id):
@@ -645,6 +680,24 @@ def updateRestriction(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/occupations/<id>
+@app.route(f"{route_prefix}/occupations/<id>", methods=['PUT'])
+@jwt_required()
+def updateOccupation(id):
+    try:
+        db = Database(conf)
+        body = request.get_json()
+        params = [body['RoomId'], body['WeekDay'], body['StartTime'], body['EndTime'], id ]
+        query = "UPDATE OCCUPATION SET RoomId=%s, WeekDay=%s, StartTime=%s, EndTime=%s WHERE Id = %s"
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return getOccupation(id)
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/blocks/<id>
 @app.route(f"{route_prefix}/blocks/<id>", methods=['DELETE'])
@@ -742,6 +795,24 @@ def deleteRestriction(id):
     try:
         db = Database(conf)
         query = f"DELETE FROM RESTRICTION WHERE Id=%s"
+        params = [id]
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/occupations/<id>
+@app.route(f"{route_prefix}/occupations/<id>", methods=['DELETE'])
+@jwt_required()
+def deleteOccupation(id):
+    try:
+        db = Database(conf)
+        query = f"DELETE FROM OCCUPATION WHERE Id=%s"
         params = [id]
         records = db.run_query(query=query, args=tuple(params))
         response = get_response_msg(records,  HTTPStatus.OK)
