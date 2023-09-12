@@ -107,62 +107,6 @@ def login():
     return response
 
 
-# /api/v1/events
-
-@app.route(f"{route_prefix}/events", methods=['GET'])
-@jwt_required()
-def getEvents():
-    try:
-        db = Database(conf)
-        # db.ping() # reconnecting mysql
-        query = f"SELECT * FROM EVENT"
-        records = db.run_query(query=query)
-        response = get_response_msg(records, HTTPStatus.OK)
-
-        db.close_connection()
-        return response
-    except pymysql.MySQLError as sqle:
-        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
-    except Exception as e:
-        abort(HTTPStatus.BAD_REQUEST, description=str(e))
-
-# /api/v1/occupations
-
-
-@app.route(f"{route_prefix}/occupations", methods=['GET'])
-@jwt_required()
-def getOccupations():
-    try:
-        db = Database(conf)
-        query = f"SELECT * FROM OCUPATION"
-        records = db.run_query(query=query)
-        response = get_response_msg(records, HTTPStatus.OK)
-
-        db.close_connection()
-        return response
-    except pymysql.MySQLError as sqle:
-        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
-    except Exception as e:
-        abort(HTTPStatus.BAD_REQUEST, description=str(e))
-
-# /api/v1/restrictions
-
-
-@app.route(f"{route_prefix}/restrictions", methods=['GET'])
-@jwt_required()
-def getRestrictions():
-    try:
-        db = Database(conf)
-        query = f"SELECT * FROM RESTRICTION"
-        records = db.run_query(query=query)
-        response = get_response_msg(records, HTTPStatus.OK)
-
-        db.close_connection()
-        return response
-    except pymysql.MySQLError as sqle:
-        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
-    except Exception as e:
-        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/events/{Id}
 
@@ -226,7 +170,7 @@ def getBlock(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
-# /api/v1/rooms
+# /api/v1/rooms/{Id}
 @app.route(f"{route_prefix}/rooms/<id>", methods=['GET'])
 @jwt_required()
 def getRoom(id):
@@ -242,7 +186,7 @@ def getRoom(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
-# /api/v1/lecturers
+# /api/v1/lecturers/{Id}
 @app.route(f"{route_prefix}/lecturers/<id>", methods=['GET'])
 @jwt_required()
 def getLecturer(id):
@@ -257,6 +201,81 @@ def getLecturer(id):
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/restriction/{Id}
+@app.route(f"{route_prefix}/restrictions/<id>", methods=['GET'])
+@jwt_required()
+def getRestriction(id):
+    try:
+        db = Database(conf)
+        query = f"SELECT * FROM RESTRICTION WHERE Id = %s"
+        records = db.run_query(query=query, args=(id))
+        response = get_response_msg(records[0], HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/events
+
+@app.route(f"{route_prefix}/events", methods=['GET'])
+@jwt_required()
+def getEvents():
+    try:
+        db = Database(conf)
+        # db.ping() # reconnecting mysql
+        query = f"SELECT * FROM EVENT"
+        records = db.run_query(query=query)
+        response = get_response_msg(records, HTTPStatus.OK)
+
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/occupations
+
+
+@app.route(f"{route_prefix}/occupations", methods=['GET'])
+@jwt_required()
+def getOccupations():
+    try:
+        db = Database(conf)
+        query = f"SELECT * FROM OCUPATION"
+        records = db.run_query(query=query)
+        response = get_response_msg(records, HTTPStatus.OK)
+
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# /api/v1/restrictions
+
+
+@app.route(f"{route_prefix}/restrictions", methods=['GET'])
+@jwt_required()
+def getRestrictions():
+    try:
+        db = Database(conf)
+        query = f"SELECT * FROM RESTRICTION"
+        records = db.run_query(query=query)
+        response = get_response_msg(records, HTTPStatus.OK)
+
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
 
 
 # /api/v1/lecturers
@@ -375,7 +394,7 @@ def createBlock():
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
-# /api/v1/lecturers
+# /api/v1/lecturers 
 @app.route(f"{route_prefix}/lecturers", methods=['POST'])
 @jwt_required()
 def createLecturer():
@@ -460,6 +479,24 @@ def createEvent():
         return getEvent(records['id'])
     except pymysql.MySQLError as sqle:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+# api/v1/restrictions
+@app.route(f"{route_prefix}/restrictions", methods=['POST'])
+@jwt_required()
+def createRestriction():
+    try:
+        db = Database(conf)
+        body = request.get_json()
+        query = "INSERT INTO RESTRICTION (LecturerId, Type, StartTime, EndTime, WeekDay) VALUES (%s, %s, %s, %s, %s)"
+        params = [body['LecturerId'], body['Type'], body['StartTime'], body['EndTime'], body['WeekDay']]
+        records = db.run_query(query=query, args=tuple(params))
+        db.close_connection()
+        return getRestriction(records['id'])
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
@@ -589,6 +626,26 @@ def updateBlock(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/restrictions/<id>
+@app.route(f"{route_prefix}/restrictions/<id>", methods=['PUT'])
+@jwt_required()
+def updateRestriction(id):
+    try:
+        db = Database(conf)
+        body = request.get_json()
+        params = [body['LecturerId'], body['Type'], body['WeekDay'], body['StartTime'], body['EndTime'], id ]
+        query = "UPDATE RESTRICTION SET LecturerId=%s, Type=%s, WeekDay=%s, StartTime=%s, EndTime=%s WHERE Id = %s"
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return getRestriction(id)
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
+
+
 # /api/v1/blocks/<id>
 @app.route(f"{route_prefix}/blocks/<id>", methods=['DELETE'])
 @jwt_required()
@@ -678,6 +735,23 @@ def deleteLecturer(id):
     except Exception as e:
         abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
+# /api/v1/restrictions/<id>
+@app.route(f"{route_prefix}/restrictions/<id>", methods=['DELETE'])
+@jwt_required()
+def deleteRestriction(id):
+    try:
+        db = Database(conf)
+        query = f"DELETE FROM RESTRICTION WHERE Id=%s"
+        params = [id]
+        records = db.run_query(query=query, args=tuple(params))
+        response = get_response_msg(records,  HTTPStatus.OK)
+        db.close_connection()
+        return response
+    except pymysql.MySQLError as sqle:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description=str(sqle))
+
+    except Exception as e:
+        abort(HTTPStatus.BAD_REQUEST, description=str(e))
 
 # /api/v1/health
 @app.route(f"{route_prefix}/health", methods=['GET'])
