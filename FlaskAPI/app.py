@@ -246,7 +246,7 @@ def getEvents():
 def getOccupations():
     try:
         db = Database(conf)
-        query = f"SELECT * FROM OCUPATION"
+        query = f"SELECT * FROM OCCUPATION"
         records = db.run_query(query=query)
         response = get_response_msg(records, HTTPStatus.OK)
 
