@@ -471,24 +471,24 @@ def updateEvent(id):
         body = request.get_json()
         query = "UPDATE EVENT SET Subject = %s, SubjectAbbr = %s,"
         params = [body['Subject'], body['SubjectAbbr']]
-        if 'StartTime' in body:
-            query += " StartTime = %s,"
-            params.append(body['StartTime'])
-        if 'EndTime' in body:
-            query += " EndTime = %s,"
-            params.append(body['EndTime'])
-        if 'WeekDay' in body:
-            query += " WeekDay = %s,"
-            params.append(body['WeekDay'])
-        if 'RoomId' in body:
-            query += " RoomId = %s,"
-            params.append(body['RoomId'])
-        if 'LecturerId' in body:
-            query += " LecturerId = %s,"
-            params.append(body['LecturerId'])
-        if 'Hide' in body:
-            query += " Hide = %s,"
-            params.append(body['Hide'])
+
+        query += " StartTime = %s,"
+        params.append(body['StartTime'])
+
+        query += " EndTime = %s,"
+        params.append(body['EndTime'])
+
+        query += " WeekDay = %s,"
+        params.append(body['WeekDay'])
+
+        query += " RoomId = %s,"
+        params.append(body['RoomId'])
+
+        query += " LecturerId = %s,"
+        params.append(body['LecturerId'])
+
+        query += " Hide = %s,"
+        params.append(body['Hide'])
         query = query[:-1] + " WHERE Id = %s"
         params.append(id)
 
