@@ -716,7 +716,6 @@ def deleteBlock(id):
         WHERE BlockId = %s
         """
         cursor.execute(delete_block_to_events_query, (id))
-        print("Reached")
         # Then, delete the block
         delete_block_query = """
         DELETE FROM BLOCK WHERE Id =%s
@@ -871,4 +870,5 @@ def internal_server_error(e):
 
 if __name__ == '__main__':
     # Launch the application
+    # app.run(host=host, port=port)
     app.run(ssl_context=('certs/cert.pem', 'certs/key.pem'), host=host, port=port)
