@@ -22,9 +22,9 @@ jobs:
     - name: Load Database Scheme
       run: sudo mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST < ./Database/schedule.sql
 
-
+      # --use-deprecated=legacy-resolver is due to package Mysqlclient 2.2.0
     - name: Migrate Old Database
       run: |
         cd Migration
-        python3 -m pip install -r requirements.txt
+        python3 -m pip --use-deprecated=legacy-resolver install -r requirements.txt
         python3 migrate.py
