@@ -7,13 +7,24 @@ on:
     branches: [ "main" ]
 
 jobs:
-  Database:
-
+  database:
     runs-on: ubuntu-latest
+    env:
+      DB_USER: "root"
+      DB_PASSWORD: "root"
+      DB_HOST: "127.0.0.1"
+      DB_NAME: "schedule"
 
     steps:
     - uses: actions/checkout@v3
     - name: Start SQL Service
       run: sudo systemctl start mysql.service
     - name: Load Database Scheme
-      run: sudo mysql --user=root --password=root --host=127.0.0.1 < ./Database/schedule.sql
+      run: sudo mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST < ./Database/schedule.sql
+
+
+    - name: Migrate Old Database
+      run: |
+        cd Migration
+        python3 -m pip install -r requirements.txt
+        python3 migrate.py
