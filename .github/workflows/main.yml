@@ -1,0 +1,19 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  Database:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Start SQL Service
+      run: sudo systemctl start mysql.service
+    - name: Load Database Scheme
+      run: sudo mysql --user=root --password=root --host=127.0.0.1 < ./Database/schedule.sql
