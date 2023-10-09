@@ -1,6 +1,7 @@
 """
 This script migrates the data from the old database to the new database. It reads the old DB data (stored in the old_db folder in CSV format), converts it to the new format and writes it to the new database. The data is also written to CSV files in the new_db folder.
 """
+import sys
 import pandas as pd
 import os
 from dotenv import load_dotenv
@@ -178,31 +179,39 @@ def migrateBlockToEvent(cursor):
         cursor.execute(insert_query, values)
         connection.commit()
 
+exit_code = 0
 try:
-    migrateRooms(cursor)    
+    migrateRooms(cursor)
 except Exception as e:
     traceback.print_exc()
+    exit_code = 1
 try:    
     migrateLecturers(cursor)
 except Exception as e:
     traceback.print_exc()
+    exit_code = 1
 try:    
     migrateRestrictions(cursor)
 except Exception as e:
     traceback.print_exc()
+    exit_code = 1
 try:    
     migrateEvents(cursor)
 except Exception as e:
     traceback.print_exc()
+    exit_code = 1
 try:    
     migrateBlocks(cursor)
 except Exception as e:
     traceback.print_exc()
+    exit_code = 1
 try:    
     migrateBlockToEvent(cursor)
 except Exception as e:
     traceback.print_exc()
+    exit_code = 1
 
 # Close the connection
 cursor.close()
 connection.close()
+sys.exit(exit_code)

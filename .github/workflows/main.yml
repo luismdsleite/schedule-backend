@@ -28,4 +28,3 @@ jobs:
         cd Migration
         python3 -m pip --use-deprecated=legacy-resolver install -r requirements.txt
         python3 migrate.py
-        echo $? 
