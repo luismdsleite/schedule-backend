@@ -23,7 +23,7 @@ jobs:
       run: sudo mysql --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST < ./Database/schedule.sql
     - name: Fetch old DB 
       run: |
-        wget --no-check-certificate ${{ secrets.OLD_DB_ZIP }} -O ./Migration/old_db/old_db.zip
+        wget --no-check-certificate "${{ secrets.OLD_DB_ZIP }}" -O ./Migration/old_db/old_db.zip
         unzip ./Migration/old_db/old_db.zip -d ./Migration/old_db/
       # --use-deprecated=legacy-resolver is due to package Mysqlclient 2.2.0
     - name: Migrate Old Database
